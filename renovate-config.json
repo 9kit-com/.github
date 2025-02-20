@@ -1,0 +1,4 @@
+{
+    "description": "Onboarding preset for use with Stackable's repos",
+    "extends": ["github>9kit-com/.github:renovate-default.json5"]
+  }

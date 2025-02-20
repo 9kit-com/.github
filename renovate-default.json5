@@ -1,0 +1,68 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:best-practices",
+    "default:dependencyDashboardApproval",
+    "default:prConcurrentLimitNone",
+    "default:prHourlyLimitNone",
+    "helpers:pinGitHubActionDigestsToSemver"
+  ],
+  "commitBodyTable": true,
+  "configMigration": true,
+  "labels": [
+    "dependencies"
+  ],
+  "prCreation": "not-pending",
+  "reviewers": [
+    "team:developers"
+  ],
+  "rollbackPrs": true,
+  "timezone": "Europe/Berlin",
+  "packageRules": [
+    {
+      "matchUpdateTypes": [
+        "patch"
+      ],
+      "groupName": "All dependencies (patch only)"
+    },
+    {
+      "matchDatasources": [
+        "docker"
+      ],
+      "registryAliases": {
+        "docker.stackable.tech/k8s/": "registry.k8s.io"
+      }
+    }
+  ],
+  "lockFileMaintenance": {
+    "enabled": true
+  },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Update _VERSION variables in Dockerfiles",
+      "fileMatch": [
+        "Dockerfile"
+      ],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>[a-z-]+?)(?: depName=(?<depName>.+?))? packageName=(?<packageName>.+?)\\s(?:ENV|ARG) .+?_VERSION=(?<currentValue>.+?)\\s"
+      ]
+    },
+    {
+      "customType": "regex",
+      "description": "Update Python package versions in GitHub Actions workflows",
+      "fileMatch": [
+        ".github/workflows/.*\\.ya?ml"
+      ],
+      "matchStrings": [
+        "pip install (?<depName>[a-zA-Z0-9-_]+)==(?<currentValue>.+?)\\n"
+      ],
+      "datasourceTemplate": "pypi"
+    }
+  ],
+  // As of today (2024-09-13) pre-commit support is in beta and needs to be enabled manually
+  // https://docs.renovatebot.com/modules/manager/pre-commit/
+  "pre-commit": {
+    enabled: true
+  }
+}
